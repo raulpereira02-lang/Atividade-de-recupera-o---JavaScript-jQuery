@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema web para cadastro e gerenciamento de produtos e estoque.">
+    <title>Gerenciador de produtos</title>
+    <link rel="stylesheet" href="css/style.css?v=2026-09-24-1">
+    <script src="js/jquery-3.7.1.min.js?v=2026-09-24-1" defer></script>
+    <script src="js/script.js?v=2026-09-24-1" defer></script>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar" aria-label="Navegação principal">
+            <div class="sidebar-brand" aria-label="Pedidos Hub logo">
+                <img class="sidebar-logo" src="img/StoreLogo.png" alt="Pedidos Hub" />
+                <p>Pedidos Hub</p>
+            </div>
+            <nav class="nav-list">
+                <button class="nav-item active" type="button" data-page="produtos" aria-current="page">
+                    <span aria-hidden="true">▦</span> Produtos
+                </button>
+                <button class="nav-item" type="button" data-page="logs">
+                    <span aria-hidden="true">≡</span> Logs do sistema
+                    <span id="logBadge" class="nav-badge">0</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="btnTema" class="theme-button" type="button" aria-pressed="false">
+                    <span class="theme-icon" aria-hidden="true">☾</span>
+                    <span class="theme-label">Modo escuro</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <button id="btnMenu" class="mobile-menu" type="button" aria-label="Abrir menu">☰</button>
+                <div>
+                    <h1 id="tituloPagina">Produtos</h1>
+                </div>
+                <button id="btnNovoProduto" class="button button-primary" type="button">
+                    <span aria-hidden="true">＋</span> Novo produto
+                </button>
+            </header>
+
+            <section id="paginaProdutos" class="page active" aria-labelledby="tituloPagina">
+                <div class="summary-grid" aria-label="Resumo do estoque">
+                    <article class="summary-card">
+                        <div class="summary-heading">
+                            <span>Produtos cadastrados</span>
+                        </div>
+                        <strong id="totalProdutos">0</strong>
+                        <small>Registros diferentes</small>
+                    </article>
+                    <article class="summary-card">
+                        <div class="summary-heading">
+                            <span>Itens em estoque</span>
+                        </div>
+                        <strong id="totalItens">0</strong>
+                        <small>Unidades disponíveis</small>
+                    </article>
+                    <article class="summary-card highlight-card">
+                        <div class="summary-heading">
+                            <span>Valor total do estoque</span>
+                        </div>
+                        <strong id="valorTotalEstoque">R$ 0,00</strong>
+                        <small>Soma de preço × quantidade</small>
+                    </article>
+                    <article class="summary-card">
+                        <div class="summary-heading">
+                            <span>Estoque baixo</span>
+                        </div>
+                        <strong id="totalEstoqueBaixo">0</strong>
+                        <small>Produtos com até 5 unidades</small>
+                    </article>
+                </div>
+
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Lista de produtos</h2>
+                        </div>
+                        <span id="resultadoContador" class="result-count">0 resultados</span>
+                    </div>
+
+                    <div class="toolbar">
+                        <label class="search-field">
+                            <span class="sr-only">Pesquisar produtos</span>
+                            <span aria-hidden="true">⌕</span>
+                            <input id="campoPesquisa" type="search" placeholder="Pesquisar por código ou nome..." autocomplete="off">
+                        </label>
+
+                        <label class="select-field">
+                            <span class="sr-only">Filtrar por categoria</span>
+                            <select id="filtroCategoria">
+                                <option value="todas">Todas as categorias</option>
+                            </select>
+                        </label>
+
+                        <label class="select-field">
+                            <span class="sr-only">Ordenar produtos</span>
+                            <select id="ordenacao">
+                                <option value="recentes">Mais recentes</option>
+                                <option value="nome-asc">Nome: A–Z</option>
+                                <option value="preco-asc">Menor preço</option>
+                                <option value="preco-desc">Maior preço</option>
+                                <option value="estoque-asc">Menor estoque</option>
+                            </select>
+                        </label>
+
+                        <button id="btnLimparFiltros" class="button button-ghost" type="button">Limpar filtros</button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Produto</th>
+                                    <th>Categoria</th>
+                                    <th class="align-right">Preço</th>
+                                    <th class="align-center">Estoque</th>
+                                    <th class="align-right">Valor em estoque</th>
+                                    <th class="align-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaProdutos"></tbody>
+                        </table>
+                        <div id="estadoVazio" class="empty-state" hidden>
+                            <h3>Nenhum produto encontrado</h3>
+                            <p>Altere os filtros ou cadastre um novo produto.</p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <section id="paginaLogs" class="page" aria-labelledby="tituloLogs" hidden>
+                <section class="panel logs-panel">
+                    <div class="panel-header logs-header">
+                        <div>
+                            <h2 id="tituloLogs">Logs do sistema</h2>
+                        </div>
+                        <button id="btnLimparLogs" class="button button-danger-outline" type="button">Limpar logs</button>
+                    </div>
+
+                    <div class="toolbar toolbar-logs">
+                        <label class="search-field">
+                            <span class="sr-only">Pesquisar nos logs</span>
+                            <span aria-hidden="true">⌕</span>
+                            <input id="pesquisaLogs" type="search" placeholder="Pesquisar ação ou descrição..." autocomplete="off">
+                        </label>
+                        <label class="select-field">
+                            <span class="sr-only">Filtrar logs por ação</span>
+                            <select id="filtroLog">
+                                <option value="todos">Todas as ações</option>
+                                <option value="Cadastro">Cadastro</option>
+                                <option value="Edição">Edição</option>
+                                <option value="Exclusão">Exclusão</option>
+                                <option value="Pesquisa">Pesquisa</option>
+                                <option value="Filtro">Filtro</option>
+                                <option value="Sistema">Sistema</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div id="listaLogs" class="log-list" aria-live="polite"></div>
+                    <div id="logsVazios" class="empty-state" hidden>
+                        <span class="empty-symbol" aria-hidden="true">≡</span>
+                        <h3>Nenhum log encontrado</h3>
+                        <p>As ações realizadas no sistema aparecerão aqui.</p>
+                    </div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <div id="modalProduto" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="tituloModal" hidden>
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <h2 id="tituloModal">Novo produto</h2>
+                </div>
+                <button class="icon-button fechar-modal" type="button" aria-label="Fechar formulário">×</button>
+            </div>
+
+            <form id="formProduto" novalidate>
+                <input id="produtoId" type="hidden">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="codigo">Código <span aria-hidden="true">*</span></label>
+                        <input id="codigo" name="codigo" type="text" maxlength="20" placeholder="Ex.: PROD-001" autocomplete="off">
+                        <small class="field-error" data-error-for="codigo"></small>
+                    </div>
+                    <div class="form-group form-group-wide">
+                        <label for="nome">Nome do produto <span aria-hidden="true">*</span></label>
+                        <input id="nome" name="nome" type="text" maxlength="80" placeholder="Ex.: Teclado mecânico" autocomplete="off">
+                        <small class="field-error" data-error-for="nome"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoria">Categoria <span aria-hidden="true">*</span></label>
+                        <select id="categoria" name="categoria">
+                            <option value="">Selecione</option>
+                            <option value="Eletrônicos">Eletrônicos</option>
+                            <option value="Informática">Informática</option>
+                            <option value="Periféricos">Periféricos</option>
+                            <option value="Escritório">Escritório</option>
+                            <option value="Acessórios">Acessórios</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                        <small class="field-error" data-error-for="categoria"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="preco">Preço (R$) <span aria-hidden="true">*</span></label>
+                        <input id="preco" name="preco" type="text" inputmode="decimal" placeholder="0,00" autocomplete="off">
+                        <small class="field-error" data-error-for="preco"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantidade">Quantidade <span aria-hidden="true">*</span></label>
+                        <input id="quantidade" name="quantidade" type="number" min="0" step="1" placeholder="0" autocomplete="off">
+                        <small class="field-error" data-error-for="quantidade"></small>
+                    </div>
+                </div>
+                <div class="stock-preview">
+                    <span>Valor estimado em estoque</span>
+                    <strong id="previewValorEstoque">R$ 0,00</strong>
+                </div>
+                <div class="modal-actions">
+                    <button class="button button-secondary fechar-modal" type="button">Cancelar</button>
+                    <button id="btnSalvar" class="button button-primary" type="submit">Cadastrar produto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalConfirmacao" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="tituloConfirmacao" hidden>
+        <div class="modal-card modal-small">
+            <div class="danger-symbol" aria-hidden="true">!</div>
+            <h2 id="tituloConfirmacao">Excluir produto?</h2>
+            <p id="textoConfirmacao">Esta ação não poderá ser desfeita.</p>
+            <div class="modal-actions centered">
+                <button id="btnCancelarExclusao" class="button button-secondary" type="button">Cancelar</button>
+                <button id="btnConfirmarExclusao" class="button button-danger" type="button">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>
