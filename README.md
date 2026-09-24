@@ -42,9 +42,8 @@ gerenciador-produtos/
 ├── css/
 │   └── style.css
 ├── img/
-│   ├── cadastro-produto.png
-│   ├── tela-inicial.png
-│   └── tela-logs.png
+│   ├── StoreLogo.png
+
 ├── js/
 │   ├── jquery-3.7.1.min.js
 │   └── script.js
