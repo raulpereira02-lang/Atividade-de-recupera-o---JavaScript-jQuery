@@ -101,28 +101,3 @@ A tela **Logs do sistema** também identifica os principais comandos ou recursos
 7. A exclusão exige confirmação do usuário.
 8. Produtos com até cinco unidades são classificados como estoque baixo.
 
-## Imagens da aplicação
-
-### Tela inicial
-
-![Tela inicial do StockFlow](img/tela-inicial.png)
-
-### Cadastro de produto
-
-![Formulário de cadastro](img/cadastro-produto.png)
-
-### Logs do sistema
-
-![Tela de logs](img/tela-logs.png)
-
-## Sugestão para apresentação
-
-Durante a apresentação, demonstre este fluxo:
-
-1. cadastre um produto;
-2. mostre a atualização automática dos cards e da tabela;
-3. pesquise e filtre os registros;
-4. edite o produto cadastrado;
-5. abra a tela de logs e explique o uso do jQuery;
-6. atualize a página para demonstrar o `localStorage`;
-7. exclua o produto e confirme a atualização do estoque.
